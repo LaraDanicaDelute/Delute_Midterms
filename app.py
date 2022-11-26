@@ -5,11 +5,17 @@ import pickle
 #flask app
 app = Flask(__name__)
 
-model = pickle.load(open("decisiontree_model.pkl", "rb"))
+def ValuePredictor(to_predict_list):
+    to_predict = np.array(to_predict_list).reshape(1, 11)
+    loaded_model = pickle.load(open("decisiontree_model.pkl", "rb"))
+    result = loaded_model.predict(to_predict)
+    return result[0]
+
 
 @app.route("/")
 def Home():
     return render_template("index.html")
+
 
 @app.route("/predict", methods = ["POST"])
 def predict():
@@ -23,7 +29,7 @@ def predict():
         if int(result)== 1:
             prediction ='u r likely not to be put in ICU'
         else:
-            prediction ='not-specified'           
+            prediction ='Income less that 50K'           
         return render_template("index.html", prediction_text = "decision tree model ICU == {}".format(prediction))
 
     if __name__ == "__main__":
